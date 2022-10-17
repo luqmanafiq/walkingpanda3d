@@ -3,10 +3,14 @@ from math import pi, sin, cos
 from direct.showbase.ShowBase import ShowBase
 from direct.task import Task
 from direct.actor.Actor import Actor
+from direct.interval.IntervalGlobal import Sequence
+from panda3d.core import Point3
+from panda3d.core import AudioSound
+
+
 
 class WalkingPanda(ShowBase):
-
-    def __init__(self):
+    def __init__(self, no_rotate=False):
         ShowBase.__init__(self)
 
         # Load the environment model.
@@ -18,7 +22,8 @@ class WalkingPanda(ShowBase):
         self.scene.setPos(-8, 42, 0)
 
         # Add the spinCameraTask procedure to the task manager.
-        self.taskMgr.add(self.spinCameraTask, "SpinCameraTask")
+        if no_rotate:
+            self.taskMgr.add(self.spinCameraTask, "SpinCameraTask")
 
         # Load and transform the panda actor.
         self.pandaActor = Actor("models/panda-model",
@@ -30,9 +35,11 @@ class WalkingPanda(ShowBase):
 
     # Define a procedure to move the camera.
     def spinCameraTask(self, task):
-        angleDegrees = task.time * 1.0
+        angleDegrees = task.time * 0
         angleRadians = angleDegrees * (pi / 180.0)
         self.camera.setPos(20 * sin(angleRadians), -20.0 * cos(angleRadians), 3)
         self.camera.setHpr(angleDegrees, 0, 0)
-        return Task.cont
+        return task.cont
 
+walking = WalkingPanda()
+walking.run()
