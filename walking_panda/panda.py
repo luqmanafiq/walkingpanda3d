@@ -9,8 +9,12 @@ from panda3d.core import Point3
 
 
 class WalkingPanda(ShowBase):
-    def __init__(self, no_rotate=False, moon_walk=False):
+    def __init__(self, no_rotate=False, moon_walk=False, scale=1):
         ShowBase.__init__(self)
+
+        #playsound
+        mySound = self.loader.loadSfx("walking_panda/sound/Defending-the-Princess-Haunted_v002.mp3")
+        mySound.play()
 
         # Load the environment model.
         self.scene = self.loader.loadModel("models/environment")
@@ -23,14 +27,19 @@ class WalkingPanda(ShowBase):
         # Add the spinCameraTask procedure to the task manager.
         if no_rotate:
             self.taskMgr.add(self.spinCameraTask, "SpinCameraTask")
+        else:
+            self.taskMgr.add(self.DspinCameraTask, "SpinCameraTask")
 
         # Load and transform the panda actor.
         self.pandaActor = Actor("models/panda-model",
                                 {"walk": "models/panda-walk4"})
-        self.pandaActor.setScale(0.005, 0.005, 0.005)
+        if scale:
+            self.pandaActor.setScale(0.005, 0.005, 0.005)
+
         self.pandaActor.reparentTo(self.render)
         # Loop its animation.
-        self.pandaActor.loop("walk")
+        if moon_walk:
+            self.pandaActor.loop("walk")
             # Create the four lerp intervals needed for the panda to
             # walk back and forth.
         posInterval1 = self.pandaActor.posInterval(13,
@@ -53,11 +62,18 @@ class WalkingPanda(ShowBase):
         self.pandaPace.loop()
 
     def setColor(self, task):
-        myNodePath.setColor(banana)
+        myNodePath.setColor(1, 0, 1, 0)
 
     # Define a procedure to move the camera.
     def spinCameraTask(self, task):
-        angleDegrees = task.time * 0
+        angleDegrees = task.time * 6.0
+        angleRadians = angleDegrees * (pi / 180.0)
+        self.camera.setPos(20 * sin(angleRadians), -20.0 * cos(angleRadians), 3)
+        self.camera.setHpr(angleDegrees, 0, 0)
+        return task.cont
+
+    def DspinCameraTask(self, task):
+        angleDegrees = task.time * 0.0
         angleRadians = angleDegrees * (pi / 180.0)
         self.camera.setPos(20 * sin(angleRadians), -20.0 * cos(angleRadians), 3)
         self.camera.setHpr(angleDegrees, 0, 0)
