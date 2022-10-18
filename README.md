@@ -15,7 +15,7 @@ A Document Title
 
 Here is the start the document.
 
-A Section Head
+Section Head
 --------------
 
 Here is part of a section, which has got some programmatic code in.
